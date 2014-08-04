@@ -17,7 +17,8 @@ public class Launch {
 		final JList<String> l = new JList<String>(productNames);
 		Container c = f.getContentPane();
 		c.add(l);
-		final JTextField tf = new JTextField(10);//<-- column count
+        final String defaultText = "Select 1";
+		final JTextField tf = new JTextField(defaultText);
 		tf.setEditable(false);//<-- disable
 		c.add(tf, BorderLayout.SOUTH);
 		f.pack();
@@ -28,8 +29,17 @@ public class Launch {
 		ListSelectionListener ll = new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				float p = productPrices[l.getSelectedIndex()];
-				tf.setText(String.format("Rs. %s/-", p));
+                if(e.getValueIsAdjusting()) {
+                    return;
+                }
+                String txt = defaultText;
+                try {
+                    float p = productPrices[l.getSelectedIndex()];
+                    txt = String.format("Rs. %s/-", p);
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    System.err.println("Nothing was selected ...");
+                }
+				tf.setText(txt);
 			}
 		};//<-- list selection handler
 
