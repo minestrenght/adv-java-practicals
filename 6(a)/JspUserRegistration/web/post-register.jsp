@@ -1,17 +1,31 @@
-<%-- 
-    Document   : post-register
-    Created on : Aug 6, 2014, 6:28:40 PM
-    Author     : Administrator
---%>
+<jsp:scriptlet>
+    String user = request.getParameter("user");
+    String pass1 = request.getParameter("pass1");
+    String pass2 = request.getParameter("pass2");
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
-    </body>
-</html>
+    boolean proceed = true;
+
+    if(null == user || user.trim().isEmpty()){
+        proceed = false;
+        request.setAttribute("user_reqd", "User name is required !");
+    }
+    if(null == pass1 || pass1.trim().isEmpty()){
+        proceed = false;
+        request.setAttribute("pass1_reqd", "Password is required !");
+    }
+    if(null == pass2 || pass2.trim().isEmpty()){
+        proceed = false;
+        request.setAttribute("pass2_reqd", "Confirm password is required !");
+    }
+
+    if(proceed && !pass1.equals(pass2)) {
+        proceed = false;
+        request.setAttribute("other_err", "Password & Confirm password don't match !");
+    }
+
+    if(!proceed){
+        request.getRequestDispatcher("pre-register.jsp").forward(request, response);
+        return;
+    }
+</jsp:scriptlet>
+pending ...
