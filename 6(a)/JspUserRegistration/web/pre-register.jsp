@@ -1,3 +1,4 @@
+<p><font color="green">${add_success}</font><font color="red">${add_failure}</font></p>
 <form method="post" action="post-register.jsp">
     <table>
         <tr>
@@ -18,7 +19,7 @@
         <tr>
             <td><input type="reset"/></td>
             <td><input type="submit"/></td>
-            <td><font color="red">${other_err}</font></td>
+            <td>&nbsp;</td>
         </tr>
     </table>
 </form>
