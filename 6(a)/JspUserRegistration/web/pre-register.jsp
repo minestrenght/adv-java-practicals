@@ -19,7 +19,7 @@
         <tr>
             <td><input type="reset"/></td>
             <td><input type="submit"/></td>
-            <td>&nbsp;</td>
+            <td>[<a href="index.jsp">Cancel</a>]</td>
         </tr>
     </table>
 </form>

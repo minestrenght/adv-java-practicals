@@ -1,11 +1,10 @@
-<jsp:directive.page import="java.sql.DriverManager"/>
-<jsp:directive.page import="java.sql.Connection"/>
-<jsp:directive.page import="java.sql.PreparedStatement"/>
-<jsp:directive.page import="java.sql.SQLException"/>
-<jsp:directive.page import="java.sql.ResultSet"/>
-<jsp:directive.page import="javax.servlet.RequestDispatcher"/>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.SQLException"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="java.sql.DriverManager"%>
 
-<jsp:scriptlet>
+<%
     String user = request.getParameter("user");
     String pass1 = request.getParameter("pass1");
     String pass2 = request.getParameter("pass2");
@@ -31,41 +30,42 @@
     }
 
     if (!proceed) {
-        //request.getRequestDispatcher("pre-register.jsp").forward(request, response);
-        //return;
-    }
-
-    Connection con = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
-    RequestDispatcher rd = null;
-    try {
-        Class.forName("com.mysql.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/minestrenght", "root", "");
-        ps = con.prepareStatement("select user_id from user_login where user_name=?");
-        rs = ps.executeQuery();
-        if(!rs.next()) {
-            request.setAttribute("add_failure", "User name already exist !");
-        } else {
-            ps = con.prepareStatement("insert into user_login t (t.user_name, t.user_pass) values (?, decode(?,'*'))");
+        request.getRequestDispatcher("pre-register.jsp").forward(request, response);
+    } else {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/minestrenght", "root", "root");
+            ps = con.prepareStatement("select user_id from user_login where user_name=?");
             ps.setString(1, user);
-            ps.setString(2, pass1);
-            if(0 < ps.executeUpdate()) {
-                request.setAttribute("add_success", "User registered !");
+            rs = ps.executeQuery();
+            if(rs.next()) {
+                request.setAttribute("add_failure", "User name already exist !");
             } else {
-                request.setAttribute("add_failure", "User registration failed !");
+                ps = con.prepareStatement("insert into user_login (user_name,user_pass) values (?, decode(?,'*'))");
+                ps.setString(1, user);
+                ps.setString(2, pass1);
+                if(0 < ps.executeUpdate()) {
+                    request.setAttribute("add_success", "User registered !");
+                } else {
+                    request.setAttribute("add_failure", "User registration failed !");
+                }
             }
-        }
-        rs.close();
-        ps.close();
-        con.close();
-    } catch (ClassNotFoundException ex) {
-        request.setAttribute("add_failure", "Something went wrong !");
-    } catch (SQLException ex) {
-        if(null != con && !con.isClosed()){
+            rs.close();
+            ps.close();
             con.close();
+        } catch (ClassNotFoundException ex) {
+            request.setAttribute("add_failure", "Something went wrong !");
+            ex.printStackTrace(System.err);
+        } catch (SQLException ex) {
+            if(null != con && !con.isClosed()){
+                con.close();
+            }
+            request.setAttribute("add_failure", "Something went wrong !");
+            ex.printStackTrace(System.err);
         }
-        request.setAttribute("add_failure", "Something went wrong !");
+        request.getRequestDispatcher("pre-register.jsp").forward(request, response);
     }
-    request.getRequestDispatcher("pre-register.jsp").forward(request, response);
-</jsp:scriptlet>
+%>
